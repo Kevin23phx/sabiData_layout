@@ -1,0 +1,17 @@
+# Ignore separate subproject directories and archives
+sabidata-admin-main/
+sabidata-mobile-main/
+sabidata-*/
+*.zip
+*.tar.gz
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE and Editor configurations
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace

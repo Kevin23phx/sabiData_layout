@@ -1,0 +1,2840 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SabiData — Préservons les voix du Burkina</title>
+  <meta name="description" content="SabiData est une plateforme de collecte crowdsourcée de données audio en langues nationales burkinabè — Mooré, Dioula, Fulfuldé, Gulmancema. Contribuez, gagnez, grandissez." />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ═══════════════════════════════════════════════
+       DESIGN TOKENS — identiques au projet
+       ═══════════════════════════════════════════════ */
+    :root {
+      --bg:           #0C1020;
+      --surface:      #131826;
+      --surface-hi:   #1C2235;
+      --border:       #1E2840;
+      --border-soft:  rgba(255,255,255,0.06);
+
+      --primary:      #F5A624;
+      --primary-soft: rgba(245,166,36,0.12);
+      --green:        #2BC49A;
+      --green-soft:   rgba(43,196,154,0.12);
+      --red:          #E84040;
+      --red-soft:     rgba(232,64,64,0.12);
+      --blue:         #4A9EF5;
+      --blue-soft:    rgba(74,158,245,0.12);
+
+      --text:         #F0EDE8;
+      --text-sec:     #6B7E9E;
+      --text-muted:   #3D4A5E;
+
+      --radius-card:  20px;
+      --radius-btn:   14px;
+      --radius-pill:  999px;
+      --radius-sm:    10px;
+
+      --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+      --font-body:    'Plus Jakarta Sans', system-ui, sans-serif;
+    }
+
+    /* ═══════════════════════════════════════════════ RESET */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 16px;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    img { display: block; max-width: 100%; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; font-family: inherit; border: none; }
+
+    /* ═══════════════════════════════════════════════ UTILS */
+    .container {
+      width: 100%;
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .section { padding: 100px 0; }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .chip--primary  { background: var(--primary-soft); color: var(--primary); border: 1px solid rgba(245,166,36,0.25); }
+    .chip--green    { background: var(--green-soft);   color: var(--green);   border: 1px solid rgba(43,196,154,0.25); }
+    .chip--red      { background: var(--red-soft);     color: var(--red);     border: 1px solid rgba(232,64,64,0.25); }
+    .chip--blue     { background: var(--blue-soft);    color: var(--blue);    border: 1px solid rgba(74,158,245,0.25); }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 5vw, 52px);
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--text);
+    }
+
+    .section-sub {
+      font-size: 18px;
+      color: var(--text-sec);
+      line-height: 1.65;
+      max-width: 560px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 28px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: var(--radius-btn);
+      font-size: 15px;
+      font-weight: 700;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn--primary {
+      background: var(--primary);
+      color: #0C1020;
+      box-shadow: 0 8px 24px rgba(245,166,36,0.35);
+    }
+    .btn--primary:hover { box-shadow: 0 12px 32px rgba(245,166,36,0.5); }
+    .btn--outline {
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    .btn--outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    /* ═══════════════════════════════════════════════ NAVBAR */
+    .navbar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(12,16,32,0.85);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .navbar__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+
+    .navbar__logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .navbar__logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #0C1020;
+      font-weight: 800;
+      box-shadow: 0 4px 14px rgba(245,166,36,0.4);
+    }
+
+    .navbar__links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .navbar__links a {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-sec);
+      transition: color 0.15s;
+    }
+    .navbar__links a:hover { color: var(--text); }
+
+    .navbar__cta { display: flex; align-items: center; gap: 12px; }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      padding: 4px;
+    }
+    .hamburger span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* ═══════════════════════════════════════════════ HERO */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding-top: 64px;
+    }
+
+    /* Animated gradient background */
+    .hero__bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .hero__blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.18;
+      animation: float 8s ease-in-out infinite;
+    }
+    .hero__blob--1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, #F5A624, transparent);
+      top: -100px; right: -150px;
+      animation-delay: 0s;
+    }
+    .hero__blob--2 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, #4A9EF5, transparent);
+      bottom: 50px; left: -100px;
+      animation-delay: -3s;
+    }
+    .hero__blob--3 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #2BC49A, transparent);
+      top: 50%; left: 40%;
+      animation-delay: -6s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%       { transform: translateY(-30px) scale(1.05); }
+    }
+
+    /* Grid overlay */
+    .hero__grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .hero__content {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+      align-items: center;
+      padding: 80px 0 60px;
+    }
+
+    .hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      background: var(--primary-soft);
+      border: 1px solid rgba(245,166,36,0.3);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 24px;
+    }
+
+    .hero__badge-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--primary);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.6; transform: scale(0.85); }
+    }
+
+    .hero__title {
+      font-family: var(--font-display);
+      font-size: clamp(40px, 6vw, 68px);
+      font-weight: 800;
+      line-height: 1.08;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+
+    .hero__title span { color: var(--primary); }
+
+    .hero__sub {
+      font-size: 18px;
+      color: var(--text-sec);
+      line-height: 1.7;
+      margin-bottom: 36px;
+      max-width: 480px;
+    }
+
+    .hero__langs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .hero__lang-pill {
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--surface-hi);
+      border: 1px solid var(--border);
+      color: var(--text-sec);
+    }
+
+    /* Phone mockup */
+    .hero__phone-wrap {
+      display: flex;
+      justify-content: center;
+      position: relative;
+    }
+
+    .hero__phone {
+      width: 280px;
+      background: var(--surface);
+      border-radius: 44px;
+      border: 2px solid var(--border);
+      padding: 12px;
+      box-shadow:
+        0 0 0 1px rgba(245,166,36,0.1),
+        0 32px 80px rgba(0,0,0,0.6),
+        0 8px 32px rgba(245,166,36,0.15);
+      position: relative;
+      animation: phoneFloat 6s ease-in-out infinite;
+    }
+
+    @keyframes phoneFloat {
+      0%, 100% { transform: translateY(0) rotate(-1deg); }
+      50%       { transform: translateY(-16px) rotate(1deg); }
+    }
+
+    .phone__notch {
+      width: 90px;
+      height: 26px;
+      background: #0C1020;
+      border-radius: 0 0 18px 18px;
+      margin: 0 auto 10px;
+    }
+
+    .phone__screen {
+      background: #0C1020;
+      border-radius: 32px;
+      overflow: hidden;
+      min-height: 480px;
+      position: relative;
+    }
+
+    /* Phone screen content */
+    .pscreen__header {
+      padding: 16px 20px 12px;
+      background: linear-gradient(135deg, #1a0a00, #1C2235);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .pscreen__greeting {
+      font-size: 11px;
+      color: var(--text-sec);
+      margin-bottom: 2px;
+    }
+
+    .pscreen__name {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .pscreen__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      background: var(--primary-soft);
+      border: 1px solid rgba(245,166,36,0.25);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-top: 6px;
+    }
+
+    .pscreen__body { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+
+    .pscreen__card {
+      background: var(--surface-hi);
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      padding: 14px;
+    }
+
+    .pscreen__kpi {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pscreen__ring {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      border: 3px solid var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .pscreen__label { font-size: 10px; color: var(--text-sec); }
+    .pscreen__val   { font-size: 15px; font-weight: 700; color: var(--text); }
+
+    .pscreen__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+    .pscreen__action {
+      border-radius: 12px;
+      padding: 12px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .pscreen__action--primary { background: var(--primary); color: #0C1020; }
+    .pscreen__action--outline {
+      background: transparent;
+      border: 1.5px solid var(--primary);
+      color: var(--primary);
+    }
+
+    .pscreen__action-icon { font-size: 20px; }
+
+    .pscreen__progress {
+      height: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: var(--radius-pill);
+      margin-top: 6px;
+      overflow: hidden;
+    }
+
+    .pscreen__progress-fill {
+      height: 100%;
+      border-radius: var(--radius-pill);
+      background: var(--primary);
+      width: 62%;
+      animation: fillProg 2s ease-out 0.5s both;
+    }
+
+    @keyframes fillProg {
+      from { width: 0; }
+      to   { width: 62%; }
+    }
+
+    .pscreen__row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+    }
+    .pscreen__row-icon { font-size: 14px; }
+
+    .hero__stats {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .hero__stats--left  { left: -90px; top: 50%; transform: translateY(-50%); }
+    .hero__stats--right { right: -90px; top: 30%; }
+
+    .hero__stat-card {
+      background: var(--surface-hi);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 12px;
+      white-space: nowrap;
+      animation: fadeSlide 0.6s ease both;
+    }
+    .hero__stat-card strong {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 18px;
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateX(20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* ═══════════════════════════════════════════════ STATS BANNER */
+    .stats-banner {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stats-banner__inner {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      divide-x: var(--border);
+    }
+
+    .stats-banner__item {
+      padding: 40px 24px;
+      text-align: center;
+      border-right: 1px solid var(--border);
+      position: relative;
+    }
+    .stats-banner__item:last-child { border-right: none; }
+
+    .stats-banner__num {
+      font-family: var(--font-display);
+      font-size: 42px;
+      font-weight: 800;
+      color: var(--primary);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stats-banner__label {
+      font-size: 14px;
+      color: var(--text-sec);
+    }
+
+    /* ═══════════════════════════════════════════════ HOW IT WORKS */
+    .how__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+      margin-top: 60px;
+    }
+
+    .how__steps { display: flex; flex-direction: column; gap: 0; }
+
+    .how__step {
+      display: flex;
+      gap: 24px;
+      position: relative;
+    }
+
+    .how__step:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 19px;
+      top: 56px;
+      bottom: -20px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--border), transparent);
+    }
+
+    .how__step-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--surface-hi);
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 15px;
+      flex-shrink: 0;
+      color: var(--text-sec);
+      transition: all 0.3s;
+    }
+    .how__step:hover .how__step-num {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-soft);
+    }
+
+    .how__step-body { padding-bottom: 36px; }
+
+    .how__step-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .how__step-desc { font-size: 14px; color: var(--text-sec); line-height: 1.6; }
+
+    .how__visual {
+      position: relative;
+    }
+
+    /* Recording UI mockup */
+    .recording-mock {
+      background: var(--surface);
+      border-radius: var(--radius-card);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .rec-top {
+      background: linear-gradient(135deg, rgba(232,64,64,0.08), transparent);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .rec-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--red);
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: var(--red-soft);
+      border: 1px solid rgba(232,64,64,0.25);
+    }
+
+    .rec-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--red);
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+
+    .rec-timer {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .rec-phrase {
+      padding: 20px;
+      font-size: 15px;
+      font-style: italic;
+      color: var(--text);
+      line-height: 1.5;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-display);
+      font-weight: 600;
+    }
+
+    .rec-phrase span { color: var(--text-sec); font-size: 11px; font-weight: 600; font-style: normal; display: block; margin-bottom: 6px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    .rec-wave {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      height: 72px;
+    }
+
+    .wave-bar {
+      width: 4px;
+      border-radius: 2px;
+      background: var(--red);
+      animation: waveBar 1.2s ease-in-out infinite;
+    }
+
+    @keyframes waveBar {
+      0%, 100% { height: 8px; opacity: 0.4; }
+      50%       { height: var(--h, 24px); opacity: 1; }
+    }
+
+    .rec-btn-row {
+      padding: 16px 20px 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .rec-stop-btn {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 8px 24px rgba(232,64,64,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: softPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes softPulse {
+      0%, 100% { box-shadow: 0 8px 24px rgba(232,64,64,0.4); }
+      50%       { box-shadow: 0 8px 40px rgba(232,64,64,0.7); }
+    }
+
+    .stop-icon {
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 4px;
+    }
+
+    /* ═══════════════════════════════════════════════ FEATURES */
+    .features-header { text-align: center; max-width: 640px; margin: 0 auto 60px; }
+    .features-header .section-sub { margin: 0 auto; }
+
+    .features__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 28px;
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent-color, var(--primary));
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(245,166,36,0.2);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.3);
+    }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .feature-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .feature-desc { font-size: 14px; color: var(--text-sec); line-height: 1.65; }
+
+    .feature-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 14px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+    }
+
+    /* ═══════════════════════════════════════════════ PLATFORM */
+    .platform__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 60px;
+    }
+
+    .platform-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 36px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .platform-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4);
+    }
+
+    .platform-card__accent {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+    }
+
+    .platform-card__icon {
+      font-size: 40px;
+      margin-bottom: 20px;
+    }
+
+    .platform-card__title {
+      font-family: var(--font-display);
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .platform-card__sub {
+      font-size: 14px;
+      color: var(--text-sec);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .platform-card__features {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .platform-card__feature {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .platform-card__feature-dot {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* Admin dashboard mockup */
+    .admin-mock {
+      background: #0C1020;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin-top: 24px;
+    }
+
+    .admin-topbar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+    }
+
+    .admin-topbar__logo {
+      font-weight: 800;
+      color: var(--primary);
+      font-family: var(--font-display);
+    }
+
+    .admin-topbar__role {
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      background: var(--primary-soft);
+      color: var(--primary);
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .admin-body { display: flex; }
+
+    .admin-sidebar {
+      width: 48px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 12px 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .admin-nav-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .admin-nav-icon--active {
+      background: var(--primary-soft);
+      border: 1px solid rgba(245,166,36,0.25);
+    }
+
+    .admin-content { flex: 1; padding: 16px; }
+
+    .admin-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 10px; }
+
+    .admin-kpi {
+      background: var(--surface-hi);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+
+    .admin-kpi__val {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .admin-kpi__label { font-size: 10px; color: var(--text-sec); margin-top: 2px; }
+
+    .admin-table {
+      background: var(--surface-hi);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .admin-table th, .admin-table td {
+      padding: 7px 10px;
+      font-size: 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .admin-table th { color: var(--text-sec); font-weight: 600; }
+    .admin-table td:last-child { border-bottom: none; }
+
+    .admin-badge {
+      padding: 2px 6px;
+      border-radius: 999px;
+      font-size: 9px;
+      font-weight: 700;
+    }
+    .admin-badge--green { background: var(--green-soft); color: var(--green); }
+    .admin-badge--amber { background: rgba(245,166,36,0.1); color: var(--primary); }
+    .admin-badge--red   { background: var(--red-soft); color: var(--red); }
+
+    /* ═══════════════════════════════════════════════ LANGUAGES */
+    .langs-section { overflow: hidden; }
+
+    .langs__header { text-align: center; max-width: 640px; margin: 0 auto 60px; }
+    .langs__header .section-sub { margin: 0 auto; }
+
+    .langs__cards {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+
+    .lang-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 28px;
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .lang-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(245,166,36,0.25);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+    }
+
+    .lang-flag {
+      font-size: 36px;
+      flex-shrink: 0;
+    }
+
+    .lang-info {}
+
+    .lang-name {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .lang-spoken { font-size: 13px; color: var(--text-sec); margin-bottom: 10px; }
+
+    .lang-rarity {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .rarity-stars { color: var(--primary); font-size: 12px; }
+
+    /* ═══════════════════════════════════════════════ GAMIFICATION */
+    .gamif__content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .gamif__cards {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .gamif-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px 24px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .gamif-card:hover { transform: translateX(6px); border-color: rgba(245,166,36,0.2); }
+
+    .gamif-card__icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .gamif-card__title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+
+    .gamif-card__desc { font-size: 13px; color: var(--text-sec); }
+
+    .gamif-card__pts {
+      margin-left: auto;
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    /* Leaderboard mockup */
+    .leaderboard-mock {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      overflow: hidden;
+    }
+
+    .lb-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .lb-header span { font-size: 11px; color: var(--text-sec); font-family: var(--font-body); font-weight: 500; }
+
+    .lb-podium {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 8px;
+      padding: 20px 20px 0;
+    }
+
+    .lb-podium-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .lb-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 800;
+      border: 2px solid var(--border);
+    }
+
+    .lb-avatar--1 { border-color: var(--primary); background: var(--primary-soft); }
+    .lb-avatar--2 { border-color: #8A93A6; background: rgba(138,147,166,0.12); }
+    .lb-avatar--3 { border-color: #B87333; background: rgba(184,115,51,0.12); }
+
+    .lb-name { font-size: 10px; font-weight: 600; }
+
+    .lb-pts { font-size: 11px; color: var(--primary); font-weight: 700; }
+
+    .lb-bar {
+      border-radius: 4px 4px 0 0;
+      width: 60px;
+    }
+    .lb-bar--1 { background: var(--primary-soft); border: 1px solid rgba(245,166,36,0.4); height: 56px; }
+    .lb-bar--2 { background: rgba(138,147,166,0.1); border: 1px solid rgba(138,147,166,0.3); height: 40px; }
+    .lb-bar--3 { background: rgba(184,115,51,0.1); border: 1px solid rgba(184,115,51,0.3); height: 28px; }
+
+    .lb-rank { font-size: 11px; color: var(--text-sec); }
+    .lb-rank--1 { color: var(--primary); font-weight: 800; }
+
+    .lb-list { padding: 12px 16px; display: flex; flex-direction: column; gap: 2px; }
+
+    .lb-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 8px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+    .lb-row--me { background: var(--primary-soft); border: 1px solid rgba(245,166,36,0.2); }
+
+    .lb-row-num { width: 18px; text-align: center; color: var(--text-sec); font-weight: 700; font-size: 11px; }
+    .lb-row-name { flex: 1; font-weight: 600; }
+    .lb-row-pts { color: var(--primary); font-weight: 700; }
+
+    /* ═══════════════════════════════════════════════ TECH STACK */
+    .tech__grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-top: 60px;
+    }
+
+    .tech-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 24px 20px;
+      text-align: center;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .tech-card:hover { transform: translateY(-3px); border-color: rgba(245,166,36,0.2); }
+
+    .tech-card__icon { font-size: 32px; margin-bottom: 12px; }
+    .tech-card__name {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .tech-card__desc { font-size: 12px; color: var(--text-sec); }
+
+    /* ═══════════════════════════════════════════════ TEAM / ABOUT */
+    .about__grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .about__mission {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .about__quote {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 28px;
+      border-left: 4px solid var(--primary);
+      font-size: 17px;
+      font-style: italic;
+      line-height: 1.65;
+      color: var(--text);
+    }
+
+    .about__values {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .about__value {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .about__value-icon { font-size: 24px; margin-bottom: 8px; }
+    .about__value-title {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .about__value-desc { font-size: 12px; color: var(--text-sec); }
+
+    /* Timeline */
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 20px;
+      position: relative;
+    }
+
+    .timeline-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 40px;
+      bottom: -20px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--border), transparent);
+    }
+
+    .timeline-dot {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      background: var(--surface-hi);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .timeline-body { padding-bottom: 32px; }
+
+    .timeline-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-sec);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .timeline-title {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .timeline-desc { font-size: 13px; color: var(--text-sec); }
+
+    /* ═══════════════════════════════════════════════ TEAM */
+    .team__grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 24px;
+      margin-top: 36px;
+    }
+
+    .team-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 30px 24px 26px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .team-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--green));
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .team-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(245, 166, 36, 0.45);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+    }
+
+    .team-card:hover::before {
+      opacity: 1;
+    }
+
+    .team-card__avatar-wrap {
+      width: 96px;
+      height: 96px;
+      margin: 0 auto 18px;
+      position: relative;
+    }
+
+    .team-card__avatar-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--primary);
+      box-shadow: 0 4px 18px rgba(245, 166, 36, 0.25);
+      display: block;
+    }
+
+    .team-card__avatar-fallback {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--surface-hi), #242D45);
+      border: 2px dashed rgba(245, 166, 36, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--primary);
+      font-family: var(--font-display);
+      letter-spacing: 1px;
+      transition: all 0.25s ease;
+    }
+
+    .team-card:hover .team-card__avatar-fallback {
+      border-style: solid;
+      border-color: var(--primary);
+      transform: scale(1.04);
+      box-shadow: 0 0 20px rgba(245, 166, 36, 0.25);
+    }
+
+    .team-card__name {
+      font-family: var(--font-display);
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .team-card__role {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    .team-card__bio {
+      font-size: 13px;
+      color: var(--text-sec);
+      line-height: 1.6;
+      margin-bottom: 18px;
+      flex-grow: 1;
+    }
+
+    .team-card__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .team-card__tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-hi);
+      color: var(--text-sec);
+      border: 1px solid var(--border-soft);
+    }
+
+    .team-card__socials {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      width: 100%;
+      padding-top: 16px;
+      border-top: 1px solid var(--border-soft);
+    }
+
+    .team-social-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 600;
+      background: var(--surface-hi);
+      color: var(--text);
+      border: 1px solid var(--border);
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .team-social-btn svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      fill: currentColor;
+    }
+
+    .team-social-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .team-social-btn--github:hover {
+      background: #24292e;
+      border-color: rgba(255,255,255,0.3);
+      color: #fff;
+    }
+
+    .team-social-btn--linkedin:hover {
+      background: #0a66c2;
+      border-color: #0a66c2;
+      color: #fff;
+    }
+
+    /* ═══════════════════════════════════════════════ CTA */
+    .cta-section {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-section::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 300px;
+      background: radial-gradient(ellipse, rgba(245,166,36,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .cta-section__inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta-section__title {
+      font-family: var(--font-display);
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 800;
+      margin-bottom: 16px;
+    }
+
+    .cta-section__sub {
+      font-size: 18px;
+      color: var(--text-sec);
+      max-width: 500px;
+      margin: 0 auto 36px;
+    }
+
+    .cta-section__btns {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* ═══════════════════════════════════════════════ FOOTER */
+    .footer {
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      padding: 60px 0 32px;
+    }
+
+    .footer__grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+
+    .footer__brand-title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .footer__brand-desc {
+      font-size: 14px;
+      color: var(--text-sec);
+      line-height: 1.6;
+      max-width: 280px;
+    }
+
+    .footer__col-title {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-sec);
+      margin-bottom: 16px;
+    }
+
+    .footer__links { display: flex; flex-direction: column; gap: 10px; }
+    .footer__link { font-size: 14px; color: var(--text-sec); transition: color 0.15s; }
+    .footer__link:hover { color: var(--primary); }
+
+    .footer__divider { border: none; border-top: 1px solid var(--border); margin-bottom: 24px; }
+
+    .footer__bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-sec);
+    }
+
+    .footer__langs { display: flex; gap: 8px; }
+    .footer__lang {
+      padding: 2px 10px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-hi);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    /* ═══════════════════════════════════════════════ SCROLL ANIMATIONS */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ═══════════════════════════════════════════════ MOBILE NAV DRAWER */
+    .mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(12,16,32,0.98);
+      z-index: 200;
+      flex-direction: column;
+      padding: 24px;
+      gap: 16px;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      font-size: 22px;
+      font-weight: 700;
+      font-family: var(--font-display);
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .mobile-close {
+      align-self: flex-end;
+      background: var(--surface-hi);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--text);
+    }
+
+    /* ═══════════════════════════════════════════════ RESPONSIVE */
+    @media (max-width: 1100px) {
+      .hero__stats { display: none; }
+      .tech__grid { grid-template-columns: repeat(2, 1fr); }
+      .footer__grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+    }
+
+    @media (max-width: 860px) {
+      .hero__content { grid-template-columns: 1fr; gap: 48px; text-align: center; }
+      .hero__sub { margin: 0 auto 36px; }
+      .hero__phone-wrap { order: -1; }
+      .hero__phone { width: 240px; }
+      .hero__langs { justify-content: center; }
+
+      .stats-banner__inner { grid-template-columns: repeat(2, 1fr); }
+      .stats-banner__item:nth-child(2) { border-right: none; }
+
+      .how__grid { grid-template-columns: 1fr; }
+      .how__visual { display: none; }
+
+      .features__grid { grid-template-columns: 1fr 1fr; }
+
+      .platform__grid { grid-template-columns: 1fr; }
+
+      .langs__cards { grid-template-columns: 1fr; }
+
+      .gamif__content { grid-template-columns: 1fr; }
+
+      .tech__grid { grid-template-columns: repeat(2, 1fr); }
+
+      .about__grid { grid-template-columns: 1fr; }
+      .team__grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+
+      .footer__grid { grid-template-columns: 1fr 1fr; }
+      .footer__bottom { flex-direction: column; gap: 12px; text-align: center; }
+
+      .navbar__links, .navbar__cta { display: none; }
+      .hamburger { display: flex; }
+    }
+
+    @media (max-width: 540px) {
+      .section { padding: 72px 0; }
+      .features__grid { grid-template-columns: 1fr; }
+      .stats-banner__inner { grid-template-columns: 1fr 1fr; }
+      .footer__grid { grid-template-columns: 1fr; }
+      .hero__phone { width: 220px; }
+      .about__values { grid-template-columns: 1fr; }
+      .team__grid { grid-template-columns: 1fr; }
+      .cta-section__btns { flex-direction: column; align-items: stretch; }
+      .cta-section__btns .btn { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════ NAVBAR -->
+  <nav class="navbar">
+    <div class="container">
+      <div class="navbar__inner">
+        <a href="#" class="navbar__logo">
+          <div class="navbar__logo-icon">S</div>
+          SabiData
+        </a>
+
+        <ul class="navbar__links">
+          <li><a href="#how-it-works">Comment ça marche</a></li>
+          <li><a href="#features">Fonctionnalités</a></li>
+          <li><a href="#platform">Plateformes</a></li>
+          <li><a href="#languages">Langues</a></li>
+          <li><a href="#about">À propos</a></li>
+          <li><a href="#team">L'Équipe</a></li>
+        </ul>
+
+        <div class="navbar__cta">
+          <a href="#about" class="btn btn--outline" style="padding:10px 20px; font-size:14px;">En savoir plus</a>
+          <a href="#cta" class="btn btn--primary" style="padding:10px 20px; font-size:14px;">Rejoindre ✦</a>
+        </div>
+
+        <button class="hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <button class="mobile-close" id="mobileClose">✕</button>
+    <a href="#how-it-works">Comment ça marche</a>
+    <a href="#features">Fonctionnalités</a>
+    <a href="#platform">Plateformes</a>
+    <a href="#languages">Langues</a>
+    <a href="#about">À propos</a>
+    <a href="#team">L'Équipe</a>
+    <a href="#cta" class="btn btn--primary" style="margin-top:8px; justify-content:center;">Rejoindre ✦</a>
+  </div>
+
+  <!-- ══════════════════════════════════════ HERO -->
+  <section class="hero">
+    <div class="hero__bg">
+      <div class="hero__grid"></div>
+      <div class="hero__blob hero__blob--1"></div>
+      <div class="hero__blob hero__blob--2"></div>
+      <div class="hero__blob hero__blob--3"></div>
+    </div>
+
+    <div class="container">
+      <div class="hero__content">
+        <!-- Left -->
+        <div>
+          <div class="hero__badge">
+            <div class="hero__badge-dot"></div>
+            Burkina Faso · Patrimoine linguistique
+          </div>
+
+          <h1 class="hero__title">
+            Votre voix<br/>
+            préserve<br/>
+            <span>nos langues.</span>
+          </h1>
+
+          <p class="hero__sub">
+            SabiData collecte des données audio crowdsourcées en langues nationales burkinabè.
+            Enregistrez, validez, transcrivez — et gagnez des récompenses réelles.
+          </p>
+
+          <div style="display:flex; gap:12px; flex-wrap:wrap;">
+            <a href="#how-it-works" class="btn btn--primary">Découvrir le projet ↓</a>
+            <a href="#platform" class="btn btn--outline">Voir les plateformes</a>
+          </div>
+
+          <div class="hero__langs">
+            <span style="font-size:12px; color:var(--text-sec);">Langues supportées :</span>
+            <span class="hero__lang-pill">Mooré</span>
+            <span class="hero__lang-pill">Dioula</span>
+            <span class="hero__lang-pill">Fulfuldé</span>
+            <span class="hero__lang-pill">Gulmancema</span>
+          </div>
+        </div>
+
+        <!-- Right: Phone mockup -->
+        <div class="hero__phone-wrap">
+          <div class="hero__phone">
+            <div class="phone__notch"></div>
+            <div class="phone__screen">
+              <!-- Dashboard UI -->
+              <div class="pscreen__header">
+                <div class="pscreen__greeting">Bienvenue,</div>
+                <div class="pscreen__name">Amadou K.</div>
+                <div class="pscreen__badge">🏅 Niveau 3 · Expert</div>
+              </div>
+              <div class="pscreen__body">
+                <!-- Points card -->
+                <div class="pscreen__card">
+                  <div class="pscreen__kpi">
+                    <div class="pscreen__ring">847</div>
+                    <div>
+                      <div class="pscreen__label">Points cumulés</div>
+                      <div class="pscreen__val">Expert Vocal</div>
+                      <div style="margin-top:4px;">
+                        <div class="pscreen__label">Encore 153 pts pour niveau 4</div>
+                        <div class="pscreen__progress"><div class="pscreen__progress-fill"></div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Actions -->
+                <div class="pscreen__actions">
+                  <div class="pscreen__action pscreen__action--primary">
+                    <span class="pscreen__action-icon">🎙</span>
+                    Parler
+                    <span style="font-size:9px; opacity:0.8;">+150 pts</span>
+                  </div>
+                  <div class="pscreen__action pscreen__action--outline">
+                    <span class="pscreen__action-icon">✅</span>
+                    Valider
+                    <span style="font-size:9px; opacity:0.8;">+20 pts</span>
+                  </div>
+                </div>
+
+                <!-- Daily goal -->
+                <div class="pscreen__card">
+                  <div class="pscreen__row">
+                    <span class="pscreen__row-icon">🏁</span>
+                    <span style="flex:1; font-size:11px; font-weight:700;">Défi du jour</span>
+                    <span style="font-size:12px; font-weight:800; color:var(--primary);">6/10</span>
+                  </div>
+                  <div class="pscreen__progress" style="margin-top:8px;">
+                    <div style="height:100%; width:60%; background:var(--primary); border-radius:999px;"></div>
+                  </div>
+                </div>
+
+                <!-- Revenue -->
+                <div class="pscreen__card">
+                  <div class="pscreen__row">
+                    <span class="pscreen__row-icon">💰</span>
+                    <div>
+                      <div style="font-size:11px; font-weight:700;">Revenus</div>
+                      <div style="font-size:10px; color:var(--text-sec);">Orange Money · Wave</div>
+                    </div>
+                    <span style="margin-left:auto; font-size:14px; font-weight:800; color:var(--green);">2 450 FCFA</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating stat cards -->
+          <div class="hero__stats hero__stats--left" style="left:-80px; top:30%;">
+            <div class="hero__stat-card" style="animation-delay:0.2s;">
+              <strong>4 lang.</strong>
+              nationales
+            </div>
+            <div class="hero__stat-card" style="animation-delay:0.4s;">
+              <strong>+150 pts</strong>
+              par clip audio
+            </div>
+          </div>
+          <div class="hero__stats hero__stats--right" style="right:-80px; top:50%;">
+            <div class="hero__stat-card" style="animation-delay:0.6s;">
+              <strong>×3</strong>
+              dialectes rares
+            </div>
+            <div class="hero__stat-card" style="animation-delay:0.8s;">
+              <strong>FCFA</strong>
+              Mobile Money
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ STATS BANNER -->
+  <div class="stats-banner">
+    <div class="container">
+      <div class="stats-banner__inner">
+        <div class="stats-banner__item fade-up">
+          <div class="stats-banner__num">4</div>
+          <div class="stats-banner__label">Langues nationales</div>
+        </div>
+        <div class="stats-banner__item fade-up" style="transition-delay:0.1s;">
+          <div class="stats-banner__num">+20</div>
+          <div class="stats-banner__label">Dialectes régionaux</div>
+        </div>
+        <div class="stats-banner__item fade-up" style="transition-delay:0.2s;">
+          <div class="stats-banner__num">×3</div>
+          <div class="stats-banner__label">Bonus zones rares</div>
+        </div>
+        <div class="stats-banner__item fade-up" style="transition-delay:0.3s;">
+          <div class="stats-banner__num">100%</div>
+          <div class="stats-banner__label">Offline-first</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════ HOW IT WORKS -->
+  <section class="section" id="how-it-works">
+    <div class="container">
+      <div class="section-label">Comment ça marche</div>
+      <h2 class="section-title">Simple, rapide,<br/>accessible à tous.</h2>
+
+      <div class="how__grid">
+        <div class="how__steps">
+          <div class="how__step fade-up">
+            <div class="how__step-num">1</div>
+            <div class="how__step-body">
+              <div class="how__step-title">Créez votre profil</div>
+              <div class="how__step-desc">Sélectionnez votre langue maternelle, votre dialecte régional et vos compétences (parler, lire, écrire). L'app détecte automatiquement votre zone géographique.</div>
+            </div>
+          </div>
+          <div class="how__step fade-up" style="transition-delay:0.1s;">
+            <div class="how__step-num">2</div>
+            <div class="how__step-body">
+              <div class="how__step-title">Enregistrez des phrases</div>
+              <div class="how__step-desc">Lisez une phrase à voix haute dans votre langue. Chaque enregistrement vous rapporte des points. Fonctionne même sans connexion internet — offline-first.</div>
+            </div>
+          </div>
+          <div class="how__step fade-up" style="transition-delay:0.2s;">
+            <div class="how__step-num">3</div>
+            <div class="how__step-body">
+              <div class="how__step-title">Validez & transcrivez</div>
+              <div class="how__step-desc">Évaluez les enregistrements d'autres contributeurs, transcrivez des clips audio en texte avec un clavier spécial pour les caractères phonétiques locaux (ɛ, ɔ, ŋ).</div>
+            </div>
+          </div>
+          <div class="how__step fade-up" style="transition-delay:0.3s;">
+            <div class="how__step-num">4</div>
+            <div class="how__step-body">
+              <div class="how__step-title">Gagnez des récompenses</div>
+              <div class="how__step-desc">Vos points se transforment en FCFA, transférés directement via Orange Money, Moov Money ou Wave. Montez dans le classement communautaire national.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recording mockup -->
+        <div class="how__visual fade-up" style="transition-delay:0.2s;">
+          <div class="recording-mock">
+            <div class="rec-top">
+              <div class="rec-badge">
+                <div class="rec-dot"></div>
+                REC
+              </div>
+              <div class="rec-timer">00:12</div>
+            </div>
+            <div class="rec-phrase">
+              <span>Phrase à enregistrer · Mooré</span>
+              « Mam nonga a tẽnga pʋgẽ wã yaa sõama. »
+            </div>
+            <div class="rec-wave">
+              <div class="wave-bar" style="--h:12px; animation-delay:0s;"></div>
+              <div class="wave-bar" style="--h:28px; animation-delay:0.1s;"></div>
+              <div class="wave-bar" style="--h:44px; animation-delay:0.15s;"></div>
+              <div class="wave-bar" style="--h:36px; animation-delay:0.05s;"></div>
+              <div class="wave-bar" style="--h:52px; animation-delay:0.2s;"></div>
+              <div class="wave-bar" style="--h:40px; animation-delay:0.25s;"></div>
+              <div class="wave-bar" style="--h:56px; animation-delay:0.1s;"></div>
+              <div class="wave-bar" style="--h:44px; animation-delay:0.3s;"></div>
+              <div class="wave-bar" style="--h:32px; animation-delay:0.15s;"></div>
+              <div class="wave-bar" style="--h:48px; animation-delay:0.05s;"></div>
+              <div class="wave-bar" style="--h:60px; animation-delay:0.2s;"></div>
+              <div class="wave-bar" style="--h:38px; animation-delay:0.1s;"></div>
+              <div class="wave-bar" style="--h:24px; animation-delay:0.25s;"></div>
+              <div class="wave-bar" style="--h:16px; animation-delay:0s;"></div>
+            </div>
+            <div class="rec-btn-row">
+              <div class="rec-stop-btn">
+                <div class="stop-icon"></div>
+              </div>
+            </div>
+            <div style="text-align:center; padding-bottom:16px; font-size:12px; color:var(--text-sec);">Appuyez pour arrêter</div>
+          </div>
+
+          <div style="margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="card" style="padding:16px; display:flex; align-items:center; gap:10px;">
+              <span style="font-size:20px;">✅</span>
+              <div>
+                <div style="font-weight:700; font-size:13px;">Validation</div>
+                <div style="font-size:11px; color:var(--text-sec);">+20 pts par clip</div>
+              </div>
+            </div>
+            <div class="card" style="padding:16px; display:flex; align-items:center; gap:10px;">
+              <span style="font-size:20px;">📝</span>
+              <div>
+                <div style="font-weight:700; font-size:13px;">Transcription</div>
+                <div style="font-size:11px; color:var(--text-sec);">Clavier phonétique</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ FEATURES -->
+  <section class="section" id="features" style="background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+    <div class="container">
+      <div class="features-header fade-up">
+        <div class="section-label">Fonctionnalités</div>
+        <h2 class="section-title">Tout ce qu'il faut<br/>pour contribuer.</h2>
+        <p class="section-sub" style="margin-top:16px;">Une application pensée pour le Burkina — connexion faible, alphabétisation partielle, mobile money.</p>
+      </div>
+
+      <div class="features__grid">
+
+        <div class="feature-card fade-up" style="--accent-color:var(--red);">
+          <div class="feature-icon" style="background:var(--red-soft);">🎙</div>
+          <div class="feature-title">Enregistrement Audio</div>
+          <div class="feature-desc">Enregistrez des clips audio avec détection d'amplitude en temps réel, forme d'onde animée et revue avant envoi. Chaque clip est horodaté et tagué à votre dialecte.</div>
+          <div class="feature-tag chip--red">+150 pts/clip</div>
+        </div>
+
+        <div class="feature-card fade-up" style="--accent-color:var(--green); transition-delay:0.1s;">
+          <div class="feature-icon" style="background:var(--green-soft);">✅</div>
+          <div class="feature-title">Validation Pair-à-pair</div>
+          <div class="feature-desc">Évaluez les enregistrements de la communauté : Oui / Non / Pas sûr. Le système de pair-review garantit la qualité des données sans équipe dédiée.</div>
+          <div class="feature-tag chip--green">+20 pts/validation</div>
+        </div>
+
+        <div class="feature-card fade-up" style="--accent-color:var(--blue); transition-delay:0.2s;">
+          <div class="feature-icon" style="background:var(--blue-soft);">📝</div>
+          <div class="feature-title">Transcription</div>
+          <div class="feature-desc">Transcrivez des clips audio en texte via un lecteur intégré (0.5× / 1× / 1.5×) et un clavier phonétique spécial incluant les caractères locaux : ɛ, ɔ, ŋ, tons.</div>
+          <div class="feature-tag chip--blue">Clavier local</div>
+        </div>
+
+        <div class="feature-card fade-up" style="--accent-color:var(--primary); transition-delay:0.1s;">
+          <div class="feature-icon" style="background:var(--primary-soft);">📡</div>
+          <div class="feature-title">Offline-First</div>
+          <div class="feature-desc">Travaillez sans connexion. Vos enregistrements sont stockés localement et synchronisés dès que le réseau revient. Une queue de synchronisation gère les envois en attente.</div>
+          <div class="feature-tag chip--primary">Connexion faible OK</div>
+        </div>
+
+        <div class="feature-card fade-up" style="--accent-color:var(--primary); transition-delay:0.2s;">
+          <div class="feature-icon" style="background:var(--primary-soft);">🗺</div>
+          <div class="feature-title">Carte des Dialectes</div>
+          <div class="feature-desc">Visualisez la densité des contributions par région sur une carte du Burkina Faso. Repérez les zones sous-couvertes qui rapportent jusqu'à ×3 points bonus.</div>
+          <div class="feature-tag chip--primary">Choroplèthe live</div>
+        </div>
+
+        <div class="feature-card fade-up" style="--accent-color:var(--green); transition-delay:0.3s;">
+          <div class="feature-icon" style="background:var(--green-soft);">💸</div>
+          <div class="feature-title">Revenus Mobile Money</div>
+          <div class="feature-desc">Convertissez vos points en FCFA et retirez via Orange Money, Moov Money ou Wave. L'historique complet de vos gains et retraits est disponible en temps réel.</div>
+          <div class="feature-tag chip--green">Orange · Moov · Wave</div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ PLATFORM -->
+  <section class="section" id="platform">
+    <div class="container">
+      <div class="section-label fade-up">Plateformes</div>
+      <h2 class="section-title fade-up">Application mobile<br/>+ Console admin.</h2>
+      <p class="section-sub fade-up" style="margin-top:16px;">Un écosystème complet : une app mobile pour les contributeurs, une console web pour les opérateurs.</p>
+
+      <div class="platform__grid">
+
+        <!-- Mobile app -->
+        <div class="platform-card fade-up">
+          <div class="platform-card__accent" style="background:linear-gradient(90deg,var(--primary),var(--red));"></div>
+          <div class="platform-card__icon">📱</div>
+          <div class="platform-card__title">Application Mobile</div>
+          <div class="platform-card__sub">Flutter · Android · Offline-first<br/>Conçue pour les connexions lentes et les utilisateurs peu alphabétisés.</div>
+          <div class="platform-card__features">
+            <div class="platform-card__feature">
+              <div class="platform-card__feature-dot" style="background:var(--primary-soft); color:var(--primary);">✦</div>
+              <div>Onboarding en 4 étapes — sélection langue, compétences, dialecte, région</div>
+            </div>
+            <div class="platform-card__feature">
+              <div class="platform-card__feature-dot" style="background:var(--red-soft); color:var(--red);">✦</div>
+              <div>Module d'enregistrement avec détection d'amplitude en temps réel</div>
+            </div>
+            <div class="platform-card__feature">
+              <div class="platform-card__feature-dot" style="background:var(--green-soft); color:var(--green);">✦</div>
+              <div>Validation pair-à-pair et transcription avec clavier phonétique</div>
+            </div>
+            <div class="platform-card__feature">
+              <div class="platform-card__feature-dot" style="background:var(--primary-soft); color:var(--primary);">✦</div>
+              <div>Gamification : niveaux, classement, séries quotidiennes, récompenses</div>
+            </div>
+            <div class="platform-card__feature">
+              <div class="platform-card__feature-dot" style="background:var(--green-soft); color:var(--green);">✦</div>
+              <div>Paiements Mobile Money (Orange, Moov, Wave) · Retraits FCFA</div>
+            </div>
+          </div>
+          <div style="margin-top:24px; display:flex; gap:8px; flex-wrap:wrap;">
+            <span class="chip chip--primary">Flutter 3.38+</span>
+            <span class="chip chip--primary">go_router</span>
+            <span class="chip chip--red">Android</span>
+          </div>
+        </div>
+
+        <!-- Admin console -->
+        <div class="platform-card fade-up" style="transition-delay:0.15s;">
+          <div class="platform-card__accent" style="background:linear-gradient(90deg,var(--blue),var(--green));"></div>
+          <div class="platform-card__icon">🖥</div>
+          <div class="platform-card__title">Console Admin</div>
+          <div class="platform-card__sub">React + Vite + TypeScript · Vercel<br/>Interface sécurisée pour opérateurs et modérateurs.</div>
+
+          <!-- Mini admin mockup -->
+          <div class="admin-mock">
+            <div class="admin-topbar">
+              <div class="admin-topbar__logo">SabiData Admin</div>
+              <div class="admin-topbar__role">Admin</div>
+            </div>
+            <div class="admin-body">
+              <div class="admin-sidebar">
+                <div class="admin-nav-icon admin-nav-icon--active">📊</div>
+                <div class="admin-nav-icon">👥</div>
+                <div class="admin-nav-icon">⚖️</div>
+                <div class="admin-nav-icon">💰</div>
+                <div class="admin-nav-icon">🔍</div>
+                <div class="admin-nav-icon">📋</div>
+              </div>
+              <div class="admin-content">
+                <div class="admin-kpis">
+                  <div class="admin-kpi">
+                    <div class="admin-kpi__val" style="color:var(--green);">1 248</div>
+                    <div class="admin-kpi__label">Utilisateurs actifs</div>
+                  </div>
+                  <div class="admin-kpi">
+                    <div class="admin-kpi__val" style="color:var(--primary);">7</div>
+                    <div class="admin-kpi__label">Retraits en attente</div>
+                  </div>
+                  <div class="admin-kpi">
+                    <div class="admin-kpi__val" style="color:var(--red);">3</div>
+                    <div class="admin-kpi__label">Litiges ouverts</div>
+                  </div>
+                </div>
+                <div class="admin-table">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>Utilisateur</th>
+                        <th>Rôle</th>
+                        <th>Statut</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>Amadou K.</td>
+                        <td><span class="admin-badge admin-badge--amber">contrib</span></td>
+                        <td><span class="admin-badge admin-badge--green">actif</span></td>
+                      </tr>
+                      <tr>
+                        <td>Fatou D.</td>
+                        <td><span class="admin-badge admin-badge--green">validator</span></td>
+                        <td><span class="admin-badge admin-badge--green">actif</span></td>
+                      </tr>
+                      <tr>
+                        <td>Boubacar S.</td>
+                        <td><span class="admin-badge admin-badge--amber">contrib</span></td>
+                        <td><span class="admin-badge admin-badge--red">suspendu</span></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="platform-card__features" style="margin-top:16px;">
+            <div class="platform-card__feature">
+              <div class="platform-card__feature-dot" style="background:var(--blue-soft); color:var(--blue);">✦</div>
+              <div>Gestion des utilisateurs : rôles, statuts, création, suspension, bannissement</div>
+            </div>
+            <div class="platform-card__feature">
+              <div class="platform-card__feature-dot" style="background:var(--red-soft); color:var(--red);">✦</div>
+              <div>Arbitrage des litiges sur les enregistrements contestés</div>
+            </div>
+            <div class="platform-card__feature">
+              <div class="platform-card__feature-dot" style="background:var(--green-soft); color:var(--green);">✦</div>
+              <div>File qualité et validation manuelle des datasets</div>
+            </div>
+            <div class="platform-card__feature">
+              <div class="platform-card__feature-dot" style="background:var(--primary-soft); color:var(--primary);">✦</div>
+              <div>Traitement des retraits FCFA et vue wallet globale</div>
+            </div>
+            <div class="platform-card__feature">
+              <div class="platform-card__feature-dot" style="background:var(--blue-soft); color:var(--blue);">✦</div>
+              <div>Piste d'audit complète — toutes les actions admin horodatées</div>
+            </div>
+          </div>
+          <div style="margin-top:24px; display:flex; gap:8px; flex-wrap:wrap;">
+            <span class="chip chip--blue">React + Vite</span>
+            <span class="chip chip--blue">TypeScript</span>
+            <span class="chip chip--green">Vercel</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ LANGUAGES -->
+  <section class="section langs-section" id="languages" style="background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+    <div class="container">
+      <div class="langs__header fade-up">
+        <div class="section-label">Langues & Dialectes</div>
+        <h2 class="section-title">4 langues,<br/>20+ dialectes.</h2>
+        <p class="section-sub" style="margin-top:16px;">Les langues nationales du Burkina Faso sont en danger de sous-représentation numérique. SabiData les préserve une phrase à la fois.</p>
+      </div>
+
+      <div class="langs__cards">
+        <div class="lang-card fade-up">
+          <div class="lang-flag">🌍</div>
+          <div class="lang-info">
+            <div class="lang-name">Mooré</div>
+            <div class="lang-spoken">≈ 7 millions de locuteurs · Peuple Mossi</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+              <span style="font-size:12px; color:var(--text-sec);">Dialectes : Yaadga · Yande · Boulsa · Kaya…</span>
+            </div>
+            <div class="lang-rarity" style="background:var(--primary-soft); color:var(--primary); border:1px solid rgba(245,166,36,0.25);">
+              <span class="rarity-stars">★★★</span> Langue prioritaire
+            </div>
+          </div>
+        </div>
+
+        <div class="lang-card fade-up" style="transition-delay:0.1s;">
+          <div class="lang-flag">🌍</div>
+          <div class="lang-info">
+            <div class="lang-name">Dioula</div>
+            <div class="lang-spoken">≈ 3 millions de locuteurs · Langue de commerce</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+              <span style="font-size:12px; color:var(--text-sec);">Dialectes : Bobo-Dioulasso · Banfora · Orodara…</span>
+            </div>
+            <div class="lang-rarity" style="background:var(--blue-soft); color:var(--blue); border:1px solid rgba(74,158,245,0.25);">
+              <span style="color:var(--blue);">★★★</span> Très recherché
+            </div>
+          </div>
+        </div>
+
+        <div class="lang-card fade-up" style="transition-delay:0.2s;">
+          <div class="lang-flag">🌍</div>
+          <div class="lang-info">
+            <div class="lang-name">Fulfuldé</div>
+            <div class="lang-spoken">≈ 1 million de locuteurs · Peuple Peul / Fulani</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+              <span style="font-size:12px; color:var(--text-sec);">Dialectes : Sahel · Est · Liptako…</span>
+            </div>
+            <div class="lang-rarity" style="background:var(--red-soft); color:var(--red); border:1px solid rgba(232,64,64,0.25);">
+              <span style="color:var(--red);">★★</span> Rare · bonus ×2
+            </div>
+          </div>
+        </div>
+
+        <div class="lang-card fade-up" style="transition-delay:0.3s;">
+          <div class="lang-flag">🌍</div>
+          <div class="lang-info">
+            <div class="lang-name">Gulmancema</div>
+            <div class="lang-spoken">≈ 700 000 locuteurs · Peuple Gourmantché</div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px;">
+              <span style="font-size:12px; color:var(--text-sec);">Dialectes : Fada N'Gourma · Diapaga · Pama…</span>
+            </div>
+            <div class="lang-rarity" style="background:var(--green-soft); color:var(--green); border:1px solid rgba(43,196,154,0.25);">
+              <span style="color:var(--green);">★</span> Très rare · bonus ×3
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Note sur la rareté -->
+      <div class="card fade-up" style="border-left:4px solid var(--primary); display:flex; gap:16px; align-items:flex-start;">
+        <span style="font-size:28px; flex-shrink:0;">⭐</span>
+        <div>
+          <div style="font-family:var(--font-display); font-size:16px; font-weight:700; margin-bottom:6px;">Bonus de rareté dialectale</div>
+          <div style="font-size:14px; color:var(--text-sec); line-height:1.6;">Les zones géographiques peu couvertes par les données audio existantes rapportent davantage de points. L'application détecte votre région et affiche un indicateur de rareté (⭐ à ⭐⭐⭐) pour vous guider vers les dialectes les plus précieux pour la recherche.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ GAMIFICATION -->
+  <section class="section" id="rewards">
+    <div class="container">
+      <div class="gamif__content">
+        <div class="fade-up">
+          <div class="section-label">Gamification & Récompenses</div>
+          <h2 class="section-title">Contribuez,<br/>gagnez, grandissez.</h2>
+          <p class="section-sub" style="margin-top:16px; margin-bottom:36px;">Un système de récompenses conçu pour maintenir la motivation et récompenser la qualité des contributions.</p>
+
+          <div class="gamif__cards">
+            <div class="gamif-card fade-up">
+              <div class="gamif-card__icon" style="background:var(--red-soft);">🎙</div>
+              <div>
+                <div class="gamif-card__title">Enregistrer une phrase</div>
+                <div class="gamif-card__desc">Lisez et enregistrez en votre langue maternelle</div>
+              </div>
+              <div class="gamif-card__pts">+150 pts</div>
+            </div>
+
+            <div class="gamif-card fade-up" style="transition-delay:0.1s;">
+              <div class="gamif-card__icon" style="background:var(--green-soft);">✅</div>
+              <div>
+                <div class="gamif-card__title">Valider un enregistrement</div>
+                <div class="gamif-card__desc">Évaluez la qualité d'un clip de la communauté</div>
+              </div>
+              <div class="gamif-card__pts">+20 pts</div>
+            </div>
+
+            <div class="gamif-card fade-up" style="transition-delay:0.15s;">
+              <div class="gamif-card__icon" style="background:var(--blue-soft);">📝</div>
+              <div>
+                <div class="gamif-card__title">Transcrire un clip</div>
+                <div class="gamif-card__desc">Convertissez un audio en texte phonétique</div>
+              </div>
+              <div class="gamif-card__pts">+50 pts</div>
+            </div>
+
+            <div class="gamif-card fade-up" style="transition-delay:0.2s;">
+              <div class="gamif-card__icon" style="background:var(--primary-soft);">🔥</div>
+              <div>
+                <div class="gamif-card__title">Série quotidienne</div>
+                <div class="gamif-card__desc">Contribuez chaque jour et maintenez votre série</div>
+              </div>
+              <div class="gamif-card__pts" style="color:var(--red);">×1.5</div>
+            </div>
+
+            <div class="gamif-card fade-up" style="transition-delay:0.25s;">
+              <div class="gamif-card__icon" style="background:var(--red-soft);">⭐</div>
+              <div>
+                <div class="gamif-card__title">Dialecte rare</div>
+                <div class="gamif-card__desc">Zones peu couvertes = multiplicateur de points</div>
+              </div>
+              <div class="gamif-card__pts" style="color:var(--red);">×3</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leaderboard mockup -->
+        <div class="fade-up" style="transition-delay:0.2s;">
+          <div class="leaderboard-mock">
+            <div class="lb-header">
+              🏆 Classement
+              <span>Mis à jour ce matin</span>
+            </div>
+
+            <div class="lb-podium">
+              <!-- 2nd -->
+              <div class="lb-podium-item">
+                <div class="lb-rank">#2</div>
+                <div class="lb-avatar lb-avatar--2">F</div>
+                <div class="lb-name">Fatou D.</div>
+                <div class="lb-pts">2 840 pts</div>
+                <div class="lb-bar lb-bar--2"></div>
+              </div>
+              <!-- 1st -->
+              <div class="lb-podium-item">
+                <div class="lb-rank lb-rank--1">👑 #1</div>
+                <div class="lb-avatar lb-avatar--1">A</div>
+                <div class="lb-name">Amadou K.</div>
+                <div class="lb-pts">3 580 pts</div>
+                <div class="lb-bar lb-bar--1"></div>
+              </div>
+              <!-- 3rd -->
+              <div class="lb-podium-item">
+                <div class="lb-rank">#3</div>
+                <div class="lb-avatar lb-avatar--3">I</div>
+                <div class="lb-name">Issa O.</div>
+                <div class="lb-pts">2 190 pts</div>
+                <div class="lb-bar lb-bar--3"></div>
+              </div>
+            </div>
+
+            <div class="lb-list">
+              <div class="lb-row">
+                <div class="lb-row-num">4</div>
+                <div class="lb-row-name">Mariam T.</div>
+                <div class="lb-row-pts">1 920 pts</div>
+              </div>
+              <div class="lb-row">
+                <div class="lb-row-num">5</div>
+                <div class="lb-row-name">Boureima S.</div>
+                <div class="lb-row-pts">1 680 pts</div>
+              </div>
+              <div class="lb-row lb-row--me">
+                <div class="lb-row-num" style="color:var(--primary);">7</div>
+                <div class="lb-row-name" style="color:var(--primary);">Vous 📍</div>
+                <div class="lb-row-pts">1 240 pts</div>
+              </div>
+              <div class="lb-row">
+                <div class="lb-row-num">8</div>
+                <div class="lb-row-name">Koné A.</div>
+                <div class="lb-row-pts">1 180 pts</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:16px; padding:20px;">
+            <div style="font-family:var(--font-display); font-weight:700; margin-bottom:12px;">💰 Vos gains</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-size:13px; color:var(--text-sec);">Solde disponible</span>
+              <span style="font-family:var(--font-display); font-size:22px; font-weight:800; color:var(--green);">2 450 FCFA</span>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <span class="chip" style="background:rgba(255,152,0,0.1); color:#FF9800; border:1px solid rgba(255,152,0,0.3);">📱 Orange Money</span>
+              <span class="chip" style="background:rgba(0,150,136,0.1); color:#009688; border:1px solid rgba(0,150,136,0.3);">💫 Wave</span>
+              <span class="chip" style="background:rgba(96,125,139,0.1); color:#90A4AE; border:1px solid rgba(96,125,139,0.3);">📶 Moov</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ TECH STACK -->
+  <section class="section" style="background:var(--surface); border-top:1px solid var(--border); border-bottom:1px solid var(--border);">
+    <div class="container">
+      <div class="features-header fade-up">
+        <div class="section-label">Stack Technique</div>
+        <h2 class="section-title">Construit avec<br/>des outils modernes.</h2>
+      </div>
+
+      <div class="tech__grid">
+        <div class="tech-card fade-up">
+          <div class="tech-card__icon">🐦</div>
+          <div class="tech-card__name">Flutter 3.38+</div>
+          <div class="tech-card__desc">Framework mobile cross-platform avec thème dark complet</div>
+        </div>
+        <div class="tech-card fade-up" style="transition-delay:0.1s;">
+          <div class="tech-card__icon">⚛️</div>
+          <div class="tech-card__name">React + Vite</div>
+          <div class="tech-card__desc">Console admin rapide et typée TypeScript</div>
+        </div>
+        <div class="tech-card fade-up" style="transition-delay:0.15s;">
+          <div class="tech-card__icon">🚀</div>
+          <div class="tech-card__name">Railway</div>
+          <div class="tech-card__desc">Backend API déployé en production sur Railway</div>
+        </div>
+        <div class="tech-card fade-up" style="transition-delay:0.2s;">
+          <div class="tech-card__icon">▲</div>
+          <div class="tech-card__name">Vercel</div>
+          <div class="tech-card__desc">Console admin hébergée avec proxy vers Railway</div>
+        </div>
+        <div class="tech-card fade-up" style="transition-delay:0.1s;">
+          <div class="tech-card__icon">🛣️</div>
+          <div class="tech-card__name">go_router</div>
+          <div class="tech-card__desc">Navigation déclarative pour l'app Flutter</div>
+        </div>
+        <div class="tech-card fade-up" style="transition-delay:0.15s;">
+          <div class="tech-card__icon">🔒</div>
+          <div class="tech-card__name">JWT + TOTP</div>
+          <div class="tech-card__desc">Authentification sécurisée pour l'admin</div>
+        </div>
+        <div class="tech-card fade-up" style="transition-delay:0.2s;">
+          <div class="tech-card__icon">📶</div>
+          <div class="tech-card__name">Offline Queue</div>
+          <div class="tech-card__desc">Outbox local avec sync automatique au retour réseau</div>
+        </div>
+        <div class="tech-card fade-up" style="transition-delay:0.25s;">
+          <div class="tech-card__icon">🎨</div>
+          <div class="tech-card__name">Design System</div>
+          <div class="tech-card__desc">Tokens de couleur cohérents entre mobile et admin</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ ABOUT -->
+  <section class="section" id="about">
+    <div class="container">
+      <div class="about__grid">
+        <div class="fade-up">
+          <div class="section-label">À propos</div>
+          <h2 class="section-title">Une mission<br/>culturelle & tech.</h2>
+          <p class="section-sub" style="margin-top:16px; margin-bottom:28px;">SabiData naît d'un constat : les langues nationales du Burkina Faso sont absentes des modèles d'IA et de NLP. Sans données, elles restent invisibles du monde numérique.</p>
+
+          <div class="about__quote">
+            « Les langues du Burkina disparaissent faute de données numériques. Chaque phrase enregistrée les préserve pour demain — et récompense ceux qui contribuent aujourd'hui. »
+          </div>
+
+          <div class="about__mission" style="margin-top:24px;">
+            <p style="font-size:14px; color:var(--text-sec); line-height:1.7;">Notre approche combine la collecte crowdsourcée de données audio avec un système de récompenses tangibles via Mobile Money. Nous croyons que la préservation culturelle et l'inclusion économique peuvent aller de pair.</p>
+            <p style="font-size:14px; color:var(--text-sec); line-height:1.7;">Le projet s'appuie sur une architecture offline-first pour être accessible dans les zones rurales du Burkina Faso, avec une interface pensée pour les utilisateurs peu familiers du numérique.</p>
+          </div>
+        </div>
+
+        <div>
+          <div class="about__values fade-up" style="margin-bottom:28px; transition-delay:0.1s;">
+            <div class="about__value">
+              <div class="about__value-icon">🎯</div>
+              <div class="about__value-title">Mission</div>
+              <div class="about__value-desc">Préserver le patrimoine linguistique burkinabè en créant des datasets audio de qualité</div>
+            </div>
+            <div class="about__value">
+              <div class="about__value-icon">🌍</div>
+              <div class="about__value-title">Impact</div>
+              <div class="about__value-desc">Rendre les langues nationales disponibles pour l'IA, la reconnaissance vocale et la recherche</div>
+            </div>
+            <div class="about__value">
+              <div class="about__value-icon">💡</div>
+              <div class="about__value-title">Innovation</div>
+              <div class="about__value-desc">Gamification et Mobile Money pour motiver une participation durable à grande échelle</div>
+            </div>
+            <div class="about__value">
+              <div class="about__value-icon">🤝</div>
+              <div class="about__value-title">Inclusion</div>
+              <div class="about__value-desc">Accessible hors-ligne, sans alphabétisation requise, dans 4 langues + dialectes</div>
+            </div>
+          </div>
+
+          <!-- Timeline -->
+          <div class="timeline fade-up" style="transition-delay:0.2s;">
+            <div class="timeline-item">
+              <div class="timeline-dot">📱</div>
+              <div class="timeline-body">
+                <div class="timeline-label">Phase 1</div>
+                <div class="timeline-title">Application Mobile</div>
+                <div class="timeline-desc">Flutter app — enregistrement, validation, transcription, gamification, offline-first</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot">🖥</div>
+              <div class="timeline-body">
+                <div class="timeline-label">Phase 1</div>
+                <div class="timeline-title">Console Admin</div>
+                <div class="timeline-desc">React + Vite — gestion utilisateurs, litiges, qualité, paiements, audit trail</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot">💰</div>
+              <div class="timeline-body">
+                <div class="timeline-label">Phase 2</div>
+                <div class="timeline-title">Paiements Mobile Money</div>
+                <div class="timeline-desc">Intégration CinetPay / FedaPay — retraits réels Orange, Moov, Wave</div>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="timeline-dot">🌐</div>
+              <div class="timeline-body">
+                <div class="timeline-label">Phase 3</div>
+                <div class="timeline-title">Data Marketplace</div>
+                <div class="timeline-desc">Interface pour chercheurs et entreprises souhaitant accéder aux datasets</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════ TEAM SABIDATA -->
+      <div id="team" class="team-section fade-up" style="margin-top: 80px; padding-top: 60px; border-top: 1px solid var(--border);">
+        <div style="text-align: center; max-width: 680px; margin: 0 auto 40px;">
+          <div class="section-label">L'Équipe de Réalisation</div>
+          <h2 class="section-title">Les Bâtisseurs de SabiData</h2>
+          <p class="section-sub" style="margin-top:16px;">
+            Rencontrez les talents et développeurs de la <strong>Team SabiData</strong> engagés pour la valorisation du patrimoine linguistique burkinabè à travers la tech et l'intelligence artificielle.
+          </p>
+        </div>
+
+        <div class="team__grid">
+          <!-- ── MEMBRE 1 : Lead Developer ── -->
+          <div class="team-card fade-up">
+            <div class="team-card__avatar-wrap">
+              <!-- Pour insérer une image : décommentez la ligne ci-dessous et mettez le lien ou chemin de votre photo -->
+              <!-- <img src="chemin_vers_photo.jpg" alt="Adil Compaoré" class="team-card__avatar-img" /> -->
+              <div class="team-card__avatar-fallback">AC</div>
+            </div>
+            <div class="team-card__name">Adil Compaoré</div>
+            <div class="team-card__role">Lead Developer & IA / NLP</div>
+            <p class="team-card__bio">Supervision technique, architecture logicielle et intégration des modèles d'intelligence artificielle pour le traitement des langues locales.</p>
+            <div class="team-card__tags">
+              <span class="team-card__tag">Fullstack</span>
+              <span class="team-card__tag">NLP & Audio</span>
+              <span class="team-card__tag">Python</span>
+              <span class="team-card__tag">Architecture</span>
+            </div>
+            <div class="team-card__socials">
+              <a href="https://github.com/pyCode-octet" target="_blank" rel="noopener noreferrer" class="team-social-btn team-social-btn--github" title="Profil GitHub">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                <span>GitHub</span>
+              </a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="team-social-btn team-social-btn--linkedin" title="Profil LinkedIn">
+                <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                <span>LinkedIn</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- ── MEMBRE 2 : Développeur Mobile ── -->
+          <div class="team-card fade-up" style="transition-delay:0.1s;">
+            <div class="team-card__avatar-wrap">
+              <!-- Pour insérer une image : décommentez la ligne ci-dessous et mettez le lien ou chemin de votre photo -->
+              <!-- <img src="chemin_vers_photo.jpg" alt="Membre Mobile" class="team-card__avatar-img" /> -->
+              <div class="team-card__avatar-fallback">MB</div>
+            </div>
+            <div class="team-card__name">Membre Mobile</div>
+            <div class="team-card__role">Développeur Mobile (Flutter)</div>
+            <p class="team-card__bio">Développement de l'application mobile cross-platform, enregistrement audio haute fidélité, mode offline-first et gamification.</p>
+            <div class="team-card__tags">
+              <span class="team-card__tag">Flutter</span>
+              <span class="team-card__tag">Dart</span>
+              <span class="team-card__tag">Offline-first</span>
+              <span class="team-card__tag">Mobile UX</span>
+            </div>
+            <div class="team-card__socials">
+              <a href="https://github.com/Team-SabiData" target="_blank" rel="noopener noreferrer" class="team-social-btn team-social-btn--github" title="Profil GitHub">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                <span>GitHub</span>
+              </a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="team-social-btn team-social-btn--linkedin" title="Profil LinkedIn">
+                <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                <span>LinkedIn</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- ── MEMBRE 3 : Frontend & Admin ── -->
+          <div class="team-card fade-up" style="transition-delay:0.2s;">
+            <div class="team-card__avatar-wrap">
+              <!-- Pour insérer une image : décommentez la ligne ci-dessous et mettez le lien ou chemin de votre photo -->
+              <!-- <img src="chemin_vers_photo.jpg" alt="Membre Frontend" class="team-card__avatar-img" /> -->
+              <div class="team-card__avatar-fallback">FE</div>
+            </div>
+            <div class="team-card__name">Membre Frontend</div>
+            <div class="team-card__role">Frontend & Console Admin (React)</div>
+            <p class="team-card__bio">Conception du tableau de bord d'administration, visualisation des métriques audio, modération des contributions et gestion des utilisateurs.</p>
+            <div class="team-card__tags">
+              <span class="team-card__tag">React</span>
+              <span class="team-card__tag">TypeScript</span>
+              <span class="team-card__tag">Tailwind</span>
+              <span class="team-card__tag">Data Viz</span>
+            </div>
+            <div class="team-card__socials">
+              <a href="https://github.com/Team-SabiData" target="_blank" rel="noopener noreferrer" class="team-social-btn team-social-btn--github" title="Profil GitHub">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                <span>GitHub</span>
+              </a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="team-social-btn team-social-btn--linkedin" title="Profil LinkedIn">
+                <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                <span>LinkedIn</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- ── MEMBRE 4 : Backend & Cloud ── -->
+          <div class="team-card fade-up" style="transition-delay:0.3s;">
+            <div class="team-card__avatar-wrap">
+              <!-- Pour insérer une image : décommentez la ligne ci-dessous et mettez le lien ou chemin de votre photo -->
+              <!-- <img src="chemin_vers_photo.jpg" alt="Membre Backend" class="team-card__avatar-img" /> -->
+              <div class="team-card__avatar-fallback">BE</div>
+            </div>
+            <div class="team-card__name">Membre Backend</div>
+            <div class="team-card__role">Backend & Cloud Engineer</div>
+            <p class="team-card__bio">Développement des API REST / GraphQL, stockage sécurisé des flux audio, pipelines d'ingestion et déploiement cloud sur Railway.</p>
+            <div class="team-card__tags">
+              <span class="team-card__tag">Node.js / Go</span>
+              <span class="team-card__tag">PostgreSQL</span>
+              <span class="team-card__tag">Railway</span>
+              <span class="team-card__tag">Docker</span>
+            </div>
+            <div class="team-card__socials">
+              <a href="https://github.com/Team-SabiData" target="_blank" rel="noopener noreferrer" class="team-social-btn team-social-btn--github" title="Profil GitHub">
+                <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                <span>GitHub</span>
+              </a>
+              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" class="team-social-btn team-social-btn--linkedin" title="Profil LinkedIn">
+                <svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                <span>LinkedIn</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ CTA -->
+  <section class="section cta-section" id="cta">
+    <div class="container">
+      <div class="cta-section__inner fade-up">
+        <div class="chip chip--primary" style="margin-bottom:24px;">Mission culturelle & numérique</div>
+        <h2 class="cta-section__title">
+          Votre voix compte.<br/>
+          <span style="color:var(--primary);">Contribuez aujourd'hui.</span>
+        </h2>
+        <p class="cta-section__sub">
+          Rejoignez des milliers de Burkinabè qui préservent leurs langues nationales tout en gagnant des récompenses réelles.
+        </p>
+        <div class="cta-section__btns">
+          <a href="#how-it-works" class="btn btn--primary" style="font-size:16px; padding:16px 32px;">
+            🎙 Commencer à contribuer
+          </a>
+          <a href="#features" class="btn btn--outline" style="font-size:16px; padding:16px 32px;">
+            En savoir plus →
+          </a>
+        </div>
+        <div style="margin-top:28px; display:flex; justify-content:center; gap:24px; flex-wrap:wrap;">
+          <span style="font-size:13px; color:var(--text-sec);">✓ Gratuit à installer</span>
+          <span style="font-size:13px; color:var(--text-sec);">✓ Fonctionne hors-ligne</span>
+          <span style="font-size:13px; color:var(--text-sec);">✓ Paiements réels en FCFA</span>
+          <span style="font-size:13px; color:var(--text-sec);">✓ 4 langues nationales</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════════════════════════════════ FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <div class="footer__brand-title">SabiData</div>
+          <div class="footer__brand-desc">Collecte crowdsourcée de données audio en langues nationales burkinabè. Chaque voix compte.</div>
+          <div style="margin-top:16px; display:flex; gap:8px; flex-wrap:wrap;">
+            <span class="hero__lang-pill">Mooré</span>
+            <span class="hero__lang-pill">Dioula</span>
+            <span class="hero__lang-pill">Fulfuldé</span>
+            <span class="hero__lang-pill">Gulmancema</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="footer__col-title">Produit</div>
+          <div class="footer__links">
+            <a href="#how-it-works" class="footer__link">Comment ça marche</a>
+            <a href="#features" class="footer__link">Fonctionnalités</a>
+            <a href="#platform" class="footer__link">Plateformes</a>
+            <a href="#rewards" class="footer__link">Gamification</a>
+          </div>
+        </div>
+
+        <div>
+          <div class="footer__col-title">Langues</div>
+          <div class="footer__links">
+            <a href="#languages" class="footer__link">Mooré</a>
+            <a href="#languages" class="footer__link">Dioula</a>
+            <a href="#languages" class="footer__link">Fulfuldé</a>
+            <a href="#languages" class="footer__link">Gulmancema</a>
+          </div>
+        </div>
+
+        <div>
+          <div class="footer__col-title">Technique & Équipe</div>
+          <div class="footer__links">
+            <a href="#platform" class="footer__link">App Mobile (Flutter)</a>
+            <a href="#platform" class="footer__link">Admin (React)</a>
+            <a href="#platform" class="footer__link">API (Railway)</a>
+            <a href="#about" class="footer__link">À propos</a>
+            <a href="#team" class="footer__link">L'Équipe (Team)</a>
+          </div>
+        </div>
+      </div>
+
+      <hr class="footer__divider" />
+
+      <div class="footer__bottom">
+        <div>© 2026 Team SabiData · Burkina Faso 🇧🇫</div>
+        <div style="font-size:12px; color:var(--text-muted);">Fait avec ❤ par Team SabiData · Pour préserver nos langues</div>
+        <div class="footer__langs">
+          <span class="footer__lang">🇫🇷 FR</span>
+          <span class="footer__lang">🌍 Mooré</span>
+          <span class="footer__lang">🌍 Dioula</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ══════════════════════════════════════ JS -->
+  <script>
+    // ── Hamburger menu
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const mobileClose = document.getElementById('mobileClose');
+
+    hamburger.addEventListener('click', () => mobileMenu.classList.add('open'));
+    mobileClose.addEventListener('click', () => mobileMenu.classList.remove('open'));
+    mobileMenu.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => mobileMenu.classList.remove('open'));
+    });
+
+    // ── Scroll animations
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.12 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+    // ── Animated counter for stats
+    function animateCounter(el, target, duration = 1800) {
+      const start = Date.now();
+      const isFloat = target.toString().includes('.');
+      function update() {
+        const elapsed = Date.now() - start;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(eased * target);
+        el.textContent = current.toLocaleString('fr-FR') + (el.dataset.suffix || '');
+        if (progress < 1) requestAnimationFrame(update);
+      }
+      requestAnimationFrame(update);
+    }
+
+    // ── Navbar scroll effect
+    const navbar = document.querySelector('.navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 60) {
+        navbar.style.borderBottomColor = 'rgba(30,40,64,0.8)';
+      } else {
+        navbar.style.borderBottomColor = 'var(--border)';
+      }
+    });
+
+    // ── Smooth active nav link
+    const sections = document.querySelectorAll('section[id], div.stats-banner');
+    const navLinks = document.querySelectorAll('.navbar__links a');
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          navLinks.forEach(link => {
+            link.style.color = link.getAttribute('href') === `#${id}` ? 'var(--text)' : '';
+          });
+        }
+      });
+    }, { threshold: 0.4 });
+
+    sections.forEach(s => sectionObserver.observe(s));
+  </script>
+</body>
+</html>
